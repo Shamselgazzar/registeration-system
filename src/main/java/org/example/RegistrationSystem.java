@@ -3,20 +3,28 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class RegisterationSystem {
+public class RegistrationSystem {
     List<User> users = new ArrayList<>();
+    private User userRegistered;
 
-    public RegisterationSystem() {
+    public RegistrationSystem() {
         addUsers();
 
     }
 
     public void addUsers() {
         users.add(new User("Ahmed", "ahmed@gmail.com", "1234"));
+        users.get(0).addAccount(AccountType.CURRENT);
         users.add(new User("Sarah", "sarah@yahoo.com", "5678"));
+        users.get(1).addAccount(AccountType.SAVINGS);
         users.add(new User("Abdullah", "abdullah@gmail.com", "213"));
+        users.get(2).addAccount(AccountType.CURRENT);
+        users.get(2).addAccount(AccountType.SAVINGS);
         users.add(new User("Maryam", "maryam@hotmail.com", "3233"));
+        users.get(3).addAccount(AccountType.CURRENT);
+        users.get(3).addAccount(AccountType.SAVINGS);
         users.add(new User("Yousef", "yousef@gmail.com", "4355"));
+        users.get(4).addAccount(AccountType.SAVINGS);
     }
 
     public void start() throws NotValidMailException {
@@ -54,7 +62,7 @@ public class RegisterationSystem {
         System.out.println("Please enter your password: ");
         String password = scanner.nextLine();
 
-        User userRegistered = getUser(email, password);
+        userRegistered = getUser(email, password);
 
         if (userRegistered != null) {
             System.out.println("Login successful. Welcome, " + userRegistered.getName() + "!");
@@ -126,8 +134,6 @@ public class RegisterationSystem {
                 System.out.println("user signed up successfully.");
             }else{
                 throw new NotValidMailException("This is an invalid email address.");
-                //System.out.println("This is an invalid email. try to signup again..");
-                //signup();
             }
 
 
@@ -135,4 +141,38 @@ public class RegisterationSystem {
         }
 
     }
-}
+
+
+    private void loggedIn() throws NotValidMailException {
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            System.out.println("1 - List user accounts");
+            System.out.println("2 - Deposit");
+            System.out.println("3 - Withdraw");
+            System.out.println("4 - Open new Account");
+            System.out.println("5 - Logout");
+            System.out.print("Enter your choice: ");
+            int choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1:
+                    userRegistered.listUserAccounts();
+                    break;
+                case 2:
+                    userRegistered.de(userRegistered);
+                    break;
+                case 3:
+                    withdraw(userRegistered);
+                    break;
+                case 4:
+                    openNewAccount(userRegistered);
+                    break;
+                case 5:
+                    return; // Logout and return to the main menu
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
+    }
+    }
