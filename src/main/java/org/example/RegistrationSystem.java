@@ -160,7 +160,7 @@ public class RegistrationSystem {
                     userRegistered.listUserAccounts();
                     break;
                 case 2:
-                    userRegistered.de(userRegistered);
+                    userRegistered.(userRegistered);
                     break;
                 case 3:
                     withdraw(userRegistered);
