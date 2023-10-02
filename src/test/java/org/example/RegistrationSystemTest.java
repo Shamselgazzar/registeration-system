@@ -9,13 +9,18 @@ import java.io.PrintStream;
 import static org.junit.jupiter.api.Assertions.*;
 
 class RegistrationSystemTest {
-    private RegistrationSystem regSys;
-    private ByteArrayOutputStream outputStream;
-    @BeforeEach
-    public void setUp() {
+    private static RegistrationSystem regSys;
+    private static ByteArrayOutputStream outputStream;
+
+    @BeforeAll
+    public static void setUpBeforeAll() {
         regSys = new RegistrationSystem();
         outputStream = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outputStream));
+    }
+    @BeforeEach
+    public void setUpBeforeEach() {
+        regSys.loggedInFlag = false;
     }
 
     @Nested
@@ -27,8 +32,15 @@ class RegistrationSystemTest {
 
             Assertions.assertFalse(regSys.loggedInFlag);
             regSys.login("ahmed@gmail.com","1234");
-            //assertTrue(outputStream.toString().contains("Login successful. Welcome, Ahmed!"));
             Assertions.assertTrue(regSys.loggedInFlag);
+        }
+        @Test
+        public void loginWelcomeUserNameMessage() throws NotValidMailException {
+            String input = "5\n";
+            System.setIn(new ByteArrayInputStream(input.getBytes()));
+
+            regSys.login("ahmed@gmail.com","1234");
+            assertTrue(outputStream.toString().contains("Login successful. Welcome, Ahmed!"));
         }
 
         @Test
@@ -55,14 +67,13 @@ class RegistrationSystemTest {
     @Nested
     class signupTests{
         @Test
-        public void testSignupSuccessful() throws NotValidMailException {
+        public void testSignupSuccessful() {
             var email = "new@gmail.com";
             var password = "password";
             var name = "Test User";
 
             String input = name +"\n";
             System.setIn(new ByteArrayInputStream(input.getBytes()));
-
 
 
             assertDoesNotThrow(() -> regSys.signup(email,password));
@@ -73,8 +84,9 @@ class RegistrationSystemTest {
         }
 
 
+
         @Test
-        public void testInvalidEmail() throws NotValidMailException {
+        public void testInvalidEmail() {
             var email = "nnn";
             var password = "password";
             var name = "Test User";
@@ -82,6 +94,84 @@ class RegistrationSystemTest {
             System.setIn(new ByteArrayInputStream(input.getBytes()));
 
             assertThrows(NotValidMailException.class, () -> regSys.signup(email, password));
+        }
+
+    }
+
+    @Nested
+    class LoggedInTests {
+        @BeforeEach
+        public void setUp() {
+
+            regSys.loggedInFlag = true;
+            regSys.userRegistered =  regSys.users.get(0);
+
+        }
+        @Test
+        public void testListUserAccounts()  {
+            String input = "1\n5\n";
+            System.setIn(new ByteArrayInputStream(input.getBytes()));
+
+            assertDoesNotThrow(() -> regSys.loggedIn());
+            assertTrue(outputStream.toString().contains("List of user accounts for Ahmed:"));
+            assertFalse(outputStream.toString().contains("Invalid choice. Please try again."));
+        }
+
+        @Test
+        public void depositCorrectAccount() {
+            String input = "1\n2\n200\n1\n5\n";
+            System.setIn(new ByteArrayInputStream(input.getBytes()));
+
+            assertDoesNotThrow(() -> regSys.loggedIn());
+            assertTrue( outputStream.toString().contains("Deposit successful"));
+        }
+
+        @Test
+        public void depositWrongAccount()  {
+            String input = "2\n200\n3\n5\n";
+            System.setIn(new ByteArrayInputStream(input.getBytes()));
+
+            assertDoesNotThrow(() -> regSys.loggedIn());
+            assertTrue(outputStream.toString().contains(" not found."));
+        }
+
+        @Test
+        public void withdrawalSuccessful()  {
+            String input = "1\n3\n0\n1\n5\n"; // Simulate withdrawing from account 1 and then "Logout"
+            System.setIn(new ByteArrayInputStream(input.getBytes()));
+
+            assertDoesNotThrow(() -> regSys.loggedIn());
+            //assertEquals("Deposit successful", outputStream.toString());
+            assertTrue(outputStream.toString().contains("Withdraw successful"));
+        }
+
+        @Test
+        public void withdrawalFail()  {
+
+            String input = "3\n200\n1\n5\n"; // Simulate withdrawing from account 1 and then "Logout"
+            System.setIn(new ByteArrayInputStream(input.getBytes()));
+
+            assertDoesNotThrow(() -> regSys.loggedIn());
+            assertTrue(outputStream.toString().contains("insufficient funds"));
+        }
+
+        @Test
+        public void testOpenNewAccount()  {
+            String input = "4\n5\n"; // Simulate opening a new account and then "Logout"
+            System.setIn(new ByteArrayInputStream(input.getBytes()));
+
+            assertDoesNotThrow(() -> regSys.loggedIn());
+            assertTrue(outputStream.toString().contains("new account is created"));
+        }
+
+        @Test
+        public void testLogout() throws NotValidMailException {
+            regSys.loggedInFlag = true; // Set loggedInFlag to true to simulate logged-in state
+            String input = "5\n"; // Simulate choosing to logout
+            System.setIn(new ByteArrayInputStream(input.getBytes()));
+
+            assertDoesNotThrow(() -> regSys.loggedIn());
+            assertFalse(outputStream.toString().contains("Invalid choice. Please try again."));
         }
 
     }

@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 
 public class RegistrationSystem {
     List<User> users = new ArrayList<>();
-    private User userRegistered;
+    User userRegistered;
     private String email;
     private String password;
     public boolean loggedInFlag = false;
@@ -127,7 +127,8 @@ public class RegistrationSystem {
     }
 
 
-    private void loggedIn() throws NotValidMailException {
+    public void loggedIn() throws NotValidMailException {
+        System.out.println(userRegistered.getEmail());
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
@@ -144,13 +145,22 @@ public class RegistrationSystem {
                     userRegistered.listUserAccounts();
                     break;
                 case 2:
-                    userRegistered.deposit(8, 200);
+                    System.out.print("Enter amount to deposit: ");
+                    int depositAmount = scanner.nextInt();
+                    System.out.print("Enter account id: ");
+                    int depositAccount = scanner.nextInt();
+                    userRegistered.deposit(depositAccount, depositAmount);
                     break;
                 case 3:
-                    userRegistered.withdraw(8, 200);
+                    System.out.print("Enter amount to withdraw: ");
+                    int withdrawAmount = scanner.nextInt();
+                    System.out.print("Enter account id: ");
+                    int withdrawAccount = scanner.nextInt();
+                    userRegistered.withdraw(withdrawAccount, withdrawAmount);
                     break;
                 case 4:
                     userRegistered.addAccount(AccountType.SAVINGS);
+                    System.out.println("A new account is created for this user");
                     break;
                 case 5:
                     userRegistered = null;
@@ -160,7 +170,6 @@ public class RegistrationSystem {
             }
         }
     }
-
 
     private User getUser(String email, String password) {
         User userLoggedIn = null;
