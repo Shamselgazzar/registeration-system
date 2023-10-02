@@ -169,7 +169,6 @@ class RegistrationSystemTest {
             var name = "Test User";
             String input = name +"\n";
             System.setIn(new ByteArrayInputStream(input.getBytes()));
-
             assertThrows(NotValidMailException.class, () -> regSys.signup(email, password));
         }
 
