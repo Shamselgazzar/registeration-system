@@ -6,10 +6,14 @@ import java.util.regex.Pattern;
 public class RegistrationSystem {
     List<User> users = new ArrayList<>();
     private User userRegistered;
+    private String email;
+    private String password;
+    public boolean loggedInFlag = false;
+    public String signupFlag = "";
+
 
     public RegistrationSystem() {
         addUsers();
-
     }
 
     public void addUsers() {
@@ -38,12 +42,20 @@ public class RegistrationSystem {
             System.out.print("Enter your choice: ");
             int choice = scanner.nextInt();
 
+            if (choice == 1 || choice == 2) {
+                Scanner scanner2 = new Scanner(System.in);
+                System.out.println("Please enter your email: ");
+                this.email = scanner2.nextLine();
+                System.out.println("Please enter your password: ");
+                this.password = scanner2.nextLine();
+            }
+
             switch (choice) {
                 case 1:
-                    login();
+                    login(email, password);
                     break;
                 case 2:
-                    signup();
+                    signup(email, password);
                     break;
                 case 3:
                     System.exit(0);
@@ -54,56 +66,29 @@ public class RegistrationSystem {
         }
     }
 
-    private void login() {
-        Scanner scanner = new Scanner(System.in);
+    public void login(String email, String password) throws NotValidMailException {
 
-        System.out.println("Please enter your email: ");
-        String email = scanner.nextLine();
-        System.out.println("Please enter your password: ");
-        String password = scanner.nextLine();
 
         userRegistered = getUser(email, password);
 
         if (userRegistered != null) {
             System.out.println("Login successful. Welcome, " + userRegistered.getName() + "!");
-            System.exit(0);
+            loggedInFlag = true;
+            loggedIn();
+
         } else {
+            loggedInFlag = false;
             System.out.println("Login failed. Please check your credentials.");
         }
 
     }
 
-    private User getUser(String email, String password) {
-        User userLoggedIn = null;
-        for (User user : users){
-            if(user.getEmail().equals(email) && user.getPassword().equals(password)){
-                userLoggedIn = user;
-                break;
-            }
-        }
-        return userLoggedIn;
-    }
 
-    private User getUser(String email) {
-        User userRegistered = null;
-        for (User user : users){
-            if(user.getEmail().equals(email)){
-                userRegistered = user;
-                break;
-            }
-        }
-        return userRegistered;
-    }
-
-    private void signup() throws NotValidMailException {
+    public void signup(String email, String password) throws NotValidMailException {
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("Please enter your name: ");
         String name = scanner.nextLine();
-        System.out.println("Please enter your email: ");
-        String email = scanner.nextLine();
-        System.out.println("Please enter your password: ");
-        String password = scanner.nextLine();
 
         User userRegistered = getUser(email);
 
@@ -112,11 +97,11 @@ public class RegistrationSystem {
             var choice = scanner.nextLine();
             switch (choice) {
                 case "y":
-                    login();
+                    login(email, password);
                     break;
                 case "n":
                     System.out.println("Try to signup again.");
-                    signup();
+                    signup(email, password);
                     break;
                 default:
                     System.out.println("Invalid choice.. Please try again.");
@@ -127,15 +112,14 @@ public class RegistrationSystem {
 
             Matcher matcher = pattern.matcher(email);
 
-            System.out.println(email +" : "+ matcher.matches()+"\n");
+            System.out.println(email + " : " + matcher.matches() + "\n");
 
-            if(matcher.matches()){
-                users.add(new User(name,email,password));
+            if (matcher.matches()) {
+                users.add(new User(name, email, password));
                 System.out.println("user signed up successfully.");
-            }else{
+            } else {
                 throw new NotValidMailException("This is an invalid email address.");
             }
-
 
 
         }
@@ -160,19 +144,44 @@ public class RegistrationSystem {
                     userRegistered.listUserAccounts();
                     break;
                 case 2:
-                    userRegistered.(userRegistered);
+                    userRegistered.deposit(8, 200);
                     break;
                 case 3:
-                    withdraw(userRegistered);
+                    userRegistered.withdraw(8, 200);
                     break;
                 case 4:
-                    openNewAccount(userRegistered);
+                    userRegistered.addAccount(AccountType.SAVINGS);
                     break;
                 case 5:
-                    return; // Logout and return to the main menu
+                    userRegistered = null;
+                    return;
                 default:
                     System.out.println("Invalid choice. Please try again.");
             }
         }
     }
+
+
+    private User getUser(String email, String password) {
+        User userLoggedIn = null;
+        for (User user : users) {
+            if (user.getEmail().equals(email) && user.getPassword().equals(password)) {
+                userLoggedIn = user;
+                break;
+            }
+        }
+        return userLoggedIn;
     }
+
+    private User getUser(String email) {
+        User userRegistered = null;
+        for (User user : users) {
+            if (user.getEmail().equals(email)) {
+                userRegistered = user;
+                break;
+            }
+        }
+        return userRegistered;
+    }
+
+}

@@ -4,6 +4,7 @@ import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 public class User {
@@ -47,11 +48,36 @@ public class User {
         this.accounts.add(new Account(this.userId, accountType, 0));
     }
 
-    private void listUserAccounts() {
+    public void listUserAccounts() {
         System.out.println("List of user accounts for " + this.getName() + ":");
-        for (Account account : this.accounts) {
-            System.out.println(account);
+        this.accounts.forEach(System.out::println);
+    }
+
+    public void deposit(long accountId, double amount){
+        Account accountToDeposit = this.accounts.stream()
+                .filter(account -> account.getAccountId() == accountId)
+                .findFirst().orElse(null);
+
+        if (accountToDeposit != null) {
+            accountToDeposit.deposit(amount);
+            System.out.println("Deposit successful. New balance: " + accountToDeposit.getBalance());
+        } else {
+            System.out.println("Account with ID " + accountId + " not found.");
         }
+
+    }
+
+    public void withdraw(long accountId, double amount){
+        Account accountToWithdraw = this.accounts.stream()
+                .filter(account -> account.getAccountId() == accountId)
+                .findFirst().orElse(null);
+
+        if (accountToWithdraw != null) {
+            accountToWithdraw.withdraw(amount);
+            } else {
+            System.out.println("Account with ID " + accountId + " not found.");
+        }
+
     }
 
 }
