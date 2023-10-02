@@ -154,7 +154,6 @@ class RegistrationSystemTest {
             String input = name +"\n";
             System.setIn(new ByteArrayInputStream(input.getBytes()));
 
-
             assertDoesNotThrow(() -> regSys.signup(email,password));
             assertEquals(email, regSys.users.get(regSys.users.size() - 1).getEmail());
             assertEquals(password, regSys.users.get(regSys.users.size()-1).getPassword());
