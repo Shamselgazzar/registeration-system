@@ -64,42 +64,9 @@ class RegistrationSystemTest {
 
     }
 
-    @Nested
-    class signupTests{
-        @Test
-        public void testSignupSuccessful() {
-            var email = "new@gmail.com";
-            var password = "password";
-            var name = "Test User";
-
-            String input = name +"\n";
-            System.setIn(new ByteArrayInputStream(input.getBytes()));
-
-
-            assertDoesNotThrow(() -> regSys.signup(email,password));
-            assertEquals(email, regSys.users.get(regSys.users.size() - 1).getEmail());
-            assertEquals(password, regSys.users.get(regSys.users.size()-1).getPassword());
-            assertEquals(name, regSys.users.get(regSys.users.size()-1).getName());
-            assertTrue(outputStream.toString().contains("user signed up successfully."));
-        }
-
-
-
-        @Test
-        public void testInvalidEmail() {
-            var email = "nnn";
-            var password = "password";
-            var name = "Test User";
-            String input = name +"\n";
-            System.setIn(new ByteArrayInputStream(input.getBytes()));
-
-            assertThrows(NotValidMailException.class, () -> regSys.signup(email, password));
-        }
-
-    }
 
     @Nested
-    class LoggedInTests {
+    class LoggedInTesting {
         @BeforeEach
         public void setUp() {
 
@@ -165,13 +132,46 @@ class RegistrationSystemTest {
         }
 
         @Test
-        public void testLogout() throws NotValidMailException {
+        public void testLogout() {
             regSys.loggedInFlag = true; // Set loggedInFlag to true to simulate logged-in state
             String input = "5\n"; // Simulate choosing to logout
             System.setIn(new ByteArrayInputStream(input.getBytes()));
 
             assertDoesNotThrow(() -> regSys.loggedIn());
             assertFalse(outputStream.toString().contains("Invalid choice. Please try again."));
+        }
+
+    }
+
+    @Nested
+    class signupTests{
+        @Test
+        public void testSignupSuccessful() {
+            var email = "new@gmail.com";
+            var password = "password";
+            var name = "Test User";
+
+            String input = name +"\n";
+            System.setIn(new ByteArrayInputStream(input.getBytes()));
+
+
+            assertDoesNotThrow(() -> regSys.signup(email,password));
+            assertEquals(email, regSys.users.get(regSys.users.size() - 1).getEmail());
+            assertEquals(password, regSys.users.get(regSys.users.size()-1).getPassword());
+            assertEquals(name, regSys.users.get(regSys.users.size()-1).getName());
+            assertTrue(outputStream.toString().contains("user signed up successfully."));
+        }
+
+
+        @Test
+        public void testInvalidEmail() {
+            var email = "nnn";
+            var password = "password";
+            var name = "Test User";
+            String input = name +"\n";
+            System.setIn(new ByteArrayInputStream(input.getBytes()));
+
+            assertThrows(NotValidMailException.class, () -> regSys.signup(email, password));
         }
 
     }
